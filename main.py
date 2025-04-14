@@ -19,6 +19,13 @@ def main() -> None:
             adata = sc.read(tmp_path)
             st.success("File uploaded successfully!")
             src.functions.print_data(adata)
+            min_gen_value =st.number_input ("min_gen_value",value=None)
+            min_disp_value =st.number_input ("max_gen_value",value=None)
+            min_cells_value =st.number_input ("min_cells_value",value=None)
+            target_sum_value =st.number_input ("target_sum_value",value=None)
+            min_mean_value =st.number_input ("min_mean_value",value=None)
+            max_mean_value =st.number_input ("max_mean_value",value=None)
+
 
         except Exception as e:
             st.error(f"Failed to load file: {e}")
@@ -26,3 +33,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
