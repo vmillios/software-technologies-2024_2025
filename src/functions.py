@@ -2,6 +2,8 @@ import streamlit as st
 import scanpy as sc
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
 
 
 
@@ -44,7 +46,8 @@ def choose_plot(adata : sc.AnnData):
         "Select plot color",
         ("batch", "celltype"),
         index = None,
-        placeholder="plot color"
+        placeholder="plot color",
+        key="cpfirst"
     )
     if option == "batch":
         plot_show_batch(adata)
@@ -61,4 +64,79 @@ def plot_show_batch(adata: sc.AnnData) -> None:
 def plot_show_celltype(adata: sc.AnnData) -> None:
     fig, ax = plt.subplots(figsize=(6, 6))
     sc.pl.umap(adata, color=['celltype'], legend_fontsize=10, ax=ax, show=False)
+    st.pyplot(fig)
+
+def choose_plot_harmony(adata):
+    option = st.selectbox(
+        "Select plot color",
+        ("batch", "celltype"),
+        index = None,
+        placeholder="plot color",
+        key="cpharmony"
+    )
+    if option == "batch":
+        plot_show_batch(adata)
+    elif option == "celltype":
+        plot_show_celltype(adata)
+    else:
+        pass
+
+def plot_show_celltype_harmony(adata):
+    fig, ax = plt.subplots(figsize=(6, 6))
+    sc.pl.umap(adata, color=['batch'], legend_fontsize=10, ax=ax, show=False)
+    st.pyplot(fig)
+
+def plot_show_batch_harmony(adata):
+    fig, ax = plt.subplots(figsize=(6, 6))
+    sc.pl.umap(adata, color=['celltype'], legend_fontsize=10, ax=ax, show=False)
+    st.pyplot(fig)
+
+def volcano_plot(degs_df):
+    degs_df["neg_log10_pval"] = -np.log10(degs_df["pvals"])
+
+    # Add a column for differential expression classification
+    degs_df["diffexpressed"] = "NS"
+    degs_df.loc[(degs_df["logfoldchanges"] > 1) & (degs_df["pvals"] < 0.05), "diffexpressed"] = "UP"
+    degs_df.loc[(degs_df["logfoldchanges"] < -1) & (degs_df["pvals"] < 0.05), "diffexpressed"] = "DOWN"
+
+    # Select top downregulated genes (prioritize by highest significance, then most negative log2FC)
+    top_downregulated = degs_df[degs_df["diffexpressed"] == "DOWN"]
+    top_downregulated = top_downregulated.sort_values(by=["neg_log10_pval", "logfoldchanges"], ascending=[False, True]).head(20)
+
+    # Select top upregulated genes (prioritize by highest significance, then most positive log2FC)
+    top_upregulated = degs_df[degs_df["diffexpressed"] == "UP"]
+    top_upregulated = top_upregulated.sort_values(by=["neg_log10_pval", "logfoldchanges"], ascending=[False, False]).head(81)
+
+    # Combine top genes
+    top_genes_combined = pd.concat([top_downregulated["genes"], top_upregulated["genes"]])
+    df_annotated = degs_df[degs_df["genes"].isin(top_genes_combined)]
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+# Create Volcano plot
+    sns.scatterplot(
+        data=degs_df,
+        x="logfoldchanges",
+        y="neg_log10_pval",
+        hue="diffexpressed",
+        palette={"UP": "#bb0c00", "DOWN": "#00AFBB", "NS": "grey"},
+        alpha=0.7,
+        edgecolor=None,
+        ax=ax
+)
+
+    # Add threshold lines
+    ax.axhline(y=-np.log10(0.05), color='gray', linestyle='dashed')
+    ax.axvline(x=-1, color='gray', linestyle='dashed')
+    ax.axvline(x=1, color='gray', linestyle='dashed')
+
+    # Labels and formatting
+    ax.set_xlim(-11, 11)
+    ax.set_ylim(25, 175)
+    ax.set_xlabel("log2 Fold Change", fontsize=14)
+    ax.set_ylabel("-log10 p-value", fontsize=14)
+    ax.set_title("Volcano of DEGs (Disease vs Control)", fontsize=16)
+    ax.legend(title="Expression", loc="upper right")
+
+    # Show the plot in Streamlit
     st.pyplot(fig)
