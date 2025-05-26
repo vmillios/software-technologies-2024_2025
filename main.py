@@ -9,6 +9,9 @@ with open(defines.MAIN_TEMPLATE, encoding="utf-8") as f:
     template = f.read()
 
 def main() -> None:
+
+    st.set_page_config(page_title="Single Cell App", layout="wide")
+
     st.write(template)
     uploaded_file = st.file_uploader("Upload a h5ad file", type=["h5ad"])
     if uploaded_file:
