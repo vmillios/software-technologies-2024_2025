@@ -23,6 +23,7 @@ inf2022105:
 - the UML diagrams (class and use case)
 - report in word
 
-inf2022194:
+inf2022192:
 
-- pass
+- styling 
+- contribution on the web developement app
