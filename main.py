@@ -50,7 +50,6 @@ def main() -> None:
             if 'data_integration' in st.session_state:
                 sce.pp.harmony_integrate(st.session_state['data_integration'], 'batch')
                 sc.pp.neighbors(st.session_state['data_integration'], use_rep='X_pca_harmony')
-                src.functions.choose_plot_harmony(st.session_state['data_integration'])
                 sc.tl.rank_genes_groups(
                     st.session_state['data_integration'],
                     groupby='disease',
@@ -60,6 +59,7 @@ def main() -> None:
                     use_raw=False
                 )
                 st.session_state['deg_result'] = st.session_state['data_integration'].uns['rank_genes_groups']
+                src.functions.choose_plot_harmony(st.session_state['data_integration'])
             if 'deg_result' in st.session_state:
                 df = pd.DataFrame(
                     {
