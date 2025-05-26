@@ -32,11 +32,12 @@ def main() -> None:
             min_disp_value =st.number_input ("min_disp_value",value=0.5)
             if st.button("start preprocessing"):
                 adata = src.functions.preprocess(adata, min_genes_value, min_cells_value, target_sum_value, min_mean_value, max_mean_value, min_disp_value)
-                src.functions.print_data_postprocessing(adata)
                 st.session_state["adata"] = adata
             if "adata" in st.session_state:
+                src.functions.print_data_postprocessing(st.session_state['adata'])
                 src.functions.choose_plot(st.session_state["adata"])
-            
+                
+
 
 
 
