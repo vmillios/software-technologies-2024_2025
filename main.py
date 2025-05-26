@@ -11,7 +11,14 @@ with open(defines.MAIN_TEMPLATE, encoding="utf-8") as f:
 def main() -> None:
 
     st.set_page_config(page_title="Single Cell App", layout="wide")
-
+    st.markdown("""
+        <div style='text-align: center; padding: 20px 0 10px 0; background-color: #eaf4ff; border-radius: 12px; margin-bottom: 20px;'>
+            <h1 style='font-size: 40px; color: #003366; font-family: "Segoe UI", sans-serif;'>
+                🔬 <span style='color:#0066cc;'>Single Cell App </span>
+            </h1>
+            <p style='font-size: 16px; color: #444;'>Your interactive preprocessing & visualization tool for single-cell data</p>
+        </div>
+    """, unsafe_allow_html=True)
     st.write(template)
     uploaded_file = st.file_uploader("Upload a h5ad file", type=["h5ad"])
     if uploaded_file:
