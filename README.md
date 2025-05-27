@@ -6,5 +6,5 @@ run the following commands
 
 ```bash
 docker build . -t software-technologies:latest
-docker run -p 8501:8501 software-technologies:latest -d
+docker run -r -d -p 8501:8501 software-technologies:latest
 ```

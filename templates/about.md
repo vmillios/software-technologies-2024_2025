@@ -25,4 +25,5 @@ inf2022105:
 
 inf2022194:
 
-- pass
+- contributions to developing the app
+- style on the web interface
